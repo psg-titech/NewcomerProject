@@ -1,0 +1,129 @@
+From: Takuo Watanabe <takuo@cs.titech.ac.jp>
+To: all@psg.cs.titech.ac.jp
+Date: Fri, 11 Apr 2008 16:40:18 +0900
+Subject: 4年生向けプログラミングプロジェクト
+-- 
+
+新4年生むけに毎年行っているプログラミングプロジェクトの案内です．
+
+問題：Scheme（サブセット）のインタプリタを作成してください．
+作成する Scheme の文法と，最低限用意する関数を以下に挙げます．
+
+記述言語は任意です．構文解析をしなくてよいのでSchemeを使うのが
+簡単だと思います．
+
+今年のハイライトは，一級継続(first-class continuation)を取り出す
+関数 call-with-current-continuation (call/cc) の実装です．インタ
+プリタを継続渡し形式で書けばそれほどむずかしいものではありません．
+
+ほかの要件は以下の２つです．
+・構文に合致しない入力はエラーとすること．
+・実行時エラーによってインタプリタが停止してしまわないように
+  すること(できる範囲で)．
+
+Schemeで実装する場合は，作成したインタプリタ上で作成したインタ
+プリタが実行できるようにするとなお結構です．
+
+余裕があったら，バッククオートやマクロなどを実装してみてください．
+
+期間は約１ヶ月とします．できあがったらゼミの時間にデモをして
+もらいます．
+
+
+A. 文法
+
+非終端記号:
+        大文字[A-Z]で始まる名前
+
+終端記号:
+        開き括弧 (
+        閉じ括弧 )
+        ピリオド .
+        小文字[a-z]で構成される名前
+        シングルクオート ' で囲まれた文字列
+
+X*  要素Xの0個以上のくりかえし
+X+  要素Xの1個以上のくりかえし
+[X] 要素Xは高々1個
+
+Toplevel ::= Exp
+           | Define
+           | (load String)                      ファイルの内容を読み込む
+
+Define ::= (define Id Exp)
+         | (define (Id Id* [. Id]) Body)
+
+Exp ::= Const                                   定数
+      | Id                                      変数
+      | (lambda Arg Body)                       λ抽象
+      | (Exp Exp*)                              関数適用
+      | (quote S-Exp)                           クオート (注1)
+      | (set! Id Exp)                           代入
+      | (let [Id] Bindings Body)                let
+      | (let* Bindings Body)                    let* (注2)
+      | (letrec Bindings Body)                  letrec
+      | (if Exp Exp [Exp])                      条件式(if)
+      | (cond (Exp Exp+)* [(else Exp+)])        条件式(cond) (注3)
+      | (and Exp*)                              条件式(and)
+      | (or Exp*)                               条件式(or)
+      | (do ((Id Exp Exp)*) (Exp Exp*) Body)    繰り返し
+
+Body ::= Define* Exp+
+
+Arg ::= Id
+      | (Id* [Id . Id])
+
+Bindings ::= ((Id Exp)*)
+
+S-Exp ::= Const
+        | Id
+        | (S-Exp* [S-Exp . S-Exp])
+
+Const ::= Num
+        | Bool
+        | String
+        | ()
+
+Num: 最低限10進整数はサポートすること
+
+Bool ::= '#t'
+       | '#f'
+
+String: ダブルクオートで囲まれた文字列 (注4)
+        
+Id ::= [0-9A-Za-z!$%&*+-./<=>?@^_]+   (注5)
+
+(注1) (quote X) だけでなく 'X という記法もサポートすること．
+(注2) let* は let の0個以上の繰り返しではなく let* という名前である．
+(注3) 節は(else節を含めて)最低1個はあること．else節は高々1個とすること．
+(注4) バックスラッシュ \ によるエスケープをサポートすること．
+(注5) 数値となるものをのぞくこと．
+
+
+B. 関数（最低限）
+
+整数
+   number?, +, -, *, /, =, <, <=, >, >=
+
+リスト
+   null?, pair?, list?, symbol?
+   car, cdr, cons, list, set-car!, set-cdr!, length, memq, last, append
+
+ブール値
+   boolean?, not
+
+文字列
+   string?, string-append,
+   symbol->string, string->symbol, string->number, number->string
+
+関数
+   procedure?
+
+比較
+   eq?, neq?, equal?
+
+継続
+   call-with-current-continuation
+
+
+以上．

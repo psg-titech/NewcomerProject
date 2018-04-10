@@ -1,0 +1,136 @@
+From: Takuo Watanabe <takuo@cs.titech.ac.jp>
+To: all@psg.cs.titech.ac.jp
+Date: Wed, 15 Apr 2009 15:25:19 +0900
+Subject: Programming Project for Newcomers (2009)
+--
+
+渡部です．
+
+新4年生むけに毎年行っているプログラミングプロジェクトの案内です．
+
+問題：Scheme（サブセット）のインタプリタを作成してください．
+作成する Scheme の文法と，最低限用意する関数を以下に挙げます．
+
+記述言語は Scheme 以外の任意の言語とします．
+
+今年のハイライトは，Scheme以外の言語で実装すること，および末尾
+呼び出しの最適化(Tail Call Optimization, TCO)を行うことです．
+末尾呼び出しの最適化とは，関数本体の末尾の位置(tail position)に
+関数呼び出しがある場合，コールスタックを消費せずにその呼び出され
+た関数に制御を移すことです．例えば
+
+(define (even? x)
+ (if (= x 0) #t (odd? (- x 1))))
+(define (odd? x)
+ (if (= x 1) #t (even? (- x 1))))
+
+のような関数 even?, odd? の場合，0以上の引数に対しスタックオー
+バーフローを起こさずに計算できなくてはなりません．
+
+ほかの要件は以下の２つです．
+・構文に合致しない入力はエラーとすること．
+・実行時エラーによってインタプリタが停止してしまわないように
+ すること(できる範囲で)．
+
+余裕があったら，一級継続，バッククオートやマクロなどを実装
+してみてください．
+
+期間は約１ヶ月とします．できあがったらゼミの時間にデモをして
+もらいます．
+
+
+A. 文法
+
+非終端記号:
+        大文字[A-Z]で始まる名前
+
+終端記号:
+        開き括弧 (
+        閉じ括弧 )
+        ピリオド .
+        小文字[a-z]で構成される名前
+        シングルクオート ' で囲まれた文字列
+
+X*  要素Xの0個以上のくりかえし
+X+  要素Xの1個以上のくりかえし
+[X] 要素Xは高々1個
+
+Toplevel ::= Exp
+          | Define
+          | (load String)                      ファイルの内容を読み込む
+
+Define ::= (define Id Exp)
+        | (define (Id Id* [. Id]) Body)
+
+Exp ::= Const                                   定数
+     | Id                                      変数
+     | (lambda Arg Body)                       λ抽象
+     | (Exp Exp*)                              関数適用
+     | (quote S-Exp)                           クオート (注1)
+     | (set! Id Exp)                           代入
+     | (let [Id] Bindings Body)                let
+     | (let* Bindings Body)                    let* (注2)
+     | (letrec Bindings Body)                  letrec
+     | (if Exp Exp [Exp])                      条件式(if)
+     | (cond (Exp Exp+)* [(else Exp+)])        条件式(cond) (注3)
+     | (and Exp*)                              条件式(and)
+     | (or Exp*)                               条件式(or)
+     | (do ((Id Exp Exp)*) (Exp Exp*) Body)    繰り返し
+
+Body ::= Define* Exp+
+
+Arg ::= Id
+     | (Id* [Id . Id])
+
+Bindings ::= ((Id Exp)*)
+
+S-Exp ::= Const
+       | Id
+       | (S-Exp* [S-Exp . S-Exp])
+
+Const ::= Num
+       | Bool
+       | String
+       | ()
+
+Num: 最低限10進整数はサポートすること
+
+Bool ::= '#t'
+      | '#f'
+
+String: ダブルクオートで囲まれた文字列 (注4)
+        
+Id ::= [0-9A-Za-z!$%&*+-./<=>?@^_]+   (注5)
+
+(注1) (quote X) だけでなく 'X という記法もサポートすること．
+(注2) let* は let の0個以上の繰り返しではなく let* という名前である．
+(注3) 節は(else節を含めて)最低1個はあること．else節は高々1個とすること．
+(注4) バックスラッシュ \ によるエスケープをサポートすること．
+(注5) 数値となるものをのぞくこと．
+
+
+B. 関数（最低限）
+
+整数
+  number?, +, -, *, /, =, <, <=, >, >=
+
+リスト
+  null?, pair?, list?, symbol?,
+  car, cdr, cons, list, length, memq, last, append,
+  set-car!, set-cdr!
+
+ブール値
+  boolean?, not
+
+文字列
+  string?, string-append,
+  symbol->string, string->symbol, string->number, number->string
+
+関数
+  procedure?
+
+比較
+  eq?, neq?, equal?
+
+
+以上．

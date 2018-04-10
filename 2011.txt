@@ -1,0 +1,147 @@
+From: Takuo Watanabe <takuo@cs.titech.ac.jp>
+To: all@psg.cs.titech.ac.jp
+Date: Mon, 18 Apr 2011 13:57:22 +0900
+Subject: Programming Project for Newcomers (2011)
+--
+
+Dear All
+
+Here is the description of programming project for newcomers.
+(written in Japanese, sorry)
+
+新4年生むけに毎年行っているプログラミングプロジェクトの案内です．
+もちろんM1以上の人が参加してもかまいません．
+
+問題：Scheme（サブセット）のインタプリタを作成してください．
+作成する Scheme の文法と，最低限用意する関数を以下(*)に挙げます．
+加えて，以下の機能を実装してください．
+
+(a) dynamic-wind
+(b) 限定継続(shift/reset)
+(c) 衛生的マクロ(hygienic macro)
+
+記述言語によって，以下の(A)(B)いずれののコースを選んで下さい．
+
+コースA: Schemeで書く．
+ただし(a)～(c)の全てを実装すること．
+実装したScheme上で，記述したSchemeサブセットを動作させることができること．
+
+コースB: Scheme以外の言語で，できればあまり使った経験のないもの．
+(a)～(c)の少なくとも一つを実現すること．
+
+ほかの要件は以下の２つです．
+・構文に合致しない入力はエラーとすること．
+・実行時エラーによってインタプリタが停止してしまわないようにすること(できる範囲で)．
+
+以上です．期間や約1ヶ月とします．完成したものはゼミの時間にデモをしてもらいます．
+
+
+(*) 実装するSchemeサブセットについて
+
+A. 構文
+
+非終端記号:
+      大文字[A-Z]で始まる名前
+
+終端記号:
+      開き括弧 (
+      閉じ括弧 )
+      ピリオド .
+      小文字[a-z]で構成される名前
+      シングルクオート ' で囲まれた文字列
+
+X*  要素Xの0個以上のくりかえし
+X+  要素Xの1個以上のくりかえし
+[X] 要素Xは高々1個
+
+Toplevel ::= Exp
+           | Define
+           | (load String)                      ファイルの内容を読み込む
+
+Define ::= (define Id Exp)
+         | (define (Id Id* [. Id]) Body)
+
+Exp ::= Const                                   定数
+     | Id                                      変数
+     | (lambda Arg Body)                       λ抽象
+     | (Exp Exp*)                              関数適用
+     | (quote S-Exp)                           クオート (注1)
+     | (set! Id Exp)                           代入
+     | (let [Id] Bindings Body)                let
+     | (let* Bindings Body)                    let* (注4)
+     | (letrec Bindings Body)                  letrec
+     | (if Exp Exp [Exp])                      条件式(if)
+     | (cond (Exp Exp+)* [(else Exp+)])        条件式(cond) (注5)
+     | (and Exp*)                              条件式(and)
+     | (or Exp*)                               条件式(or)
+     | (begin Exp*)                            逐次実行
+     | (do ((Id Exp Exp)*) (Exp Exp*) Body)    繰り返し
+
+Body ::= Define* Exp+
+
+Arg ::= Id
+      | (Id* [Id . Id])
+
+Bindings ::= ((Id Exp)*)
+
+S-Exp ::= Const
+        | Id
+        | (S-Exp* [S-Exp . S-Exp])
+
+Const ::= Num
+        | Bool
+        | String
+        | ()
+
+Num: 最低限10進整数はサポートすること
+
+Bool ::= '#t'
+       | '#f'
+
+String: ダブルクオートで囲まれた文字列 (注1)
+
+Id ::= [0-9A-Za-z!$%&*+-./<=>?@^_]+   (注3)
+
+(注1) (quote X) だけでなく 'X という記法もサポートすること．
+(注2) バックスラッシュ \ によるエスケープをサポートすること．
+(注3) 数値となるものをのぞくこと．
+(注4) let* は let の0個以上の繰り返しではなく let* という名前である．
+(注5) 節は(else節を含めて)最低1個はあること．else節は高々1個とすること．
+
+B. 関数（最低限）
+
+整数
+number?, +, -, *, /, =, <, <=, >, >=
+
+リスト
+null?, pair?, list?, symbol?,
+car, cdr, cons, list, length, memq, last, append,
+set-car!, set-cdr!
+
+ブール値
+boolean?, not
+
+文字列
+string?, string-append,
+symbol->string, string->symbol, string->number, number->string
+
+関数
+procedure?
+
+比較
+eq?, neq?, equal?
+
+C. 末尾呼び出しの最適化
+末尾呼び出しの最適化(Tail Call Optimization, TCO)とは，関数本体の
+末尾の位置(tail position)に関数呼び出しがある場合，コールスタックを
+消費せずにその呼び出された関数に制御を移すことです．例えば
+
+(define (even? x)
+(if (= x 0) #t (odd? (- x 1))))
+(define (odd? x)
+(if (= x 1) #t (even? (- x 1))))
+
+のような関数 even?, odd? の場合，0以上の引数に対しスタックオーバー
+フローを起こさずに計算できなくてはなりません．
+
+以上．
