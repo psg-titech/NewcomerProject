@@ -1,0 +1,63 @@
+差出人: Takuo Watanabe <takuo@c.titech.ac.jp>
+件名: Programming Project for Newcomers (2019)
+日付: 2019年4月26日 16:35:11 JST
+宛先: announce@psg.c.titech.ac.jp
+
+例年新4年生むけに毎年行っているプログラミング課題の案内です．
+言語処理系・関数プログラミング・記号処理・システムプログラミングに慣れ親しむのが目的です．
+M1以上の人が参加してもかまいません．
+
+例年Schemeのインタプリタを作ってもらっているのですが，今年は趣向を大幅に変えたいとおもいます．
+
+テーマ：Emfrpでロボットの制御を行うプログラムを書く
+
+Emfrpを使って，以下のいずれかのロボットを制御するプログラムを書いてください．
+
+* Pololu Balboa 32U4
+ - 2輪倒立振子
+ - センサ：加速度，ジャイロ，方位，モータエンコーダ
+ - アクチュエータ：モーターx2
+ - MPU: ATmega32U4 (Raspberry Piを搭載可能)
+ - https://www.pololu.com/category/210/balboa-robot-and-accessories
+
+* Pololu Zumo32U4
+ - キャタピラ
+ - センサ：加速度，ジャイロ，方位，モータエンコーダ，近接(Zumo32U4同士)
+ - アクチュエータ：モーターx2
+ - MPU: ATmega32U4
+ - https://www.pololu.com/category/129/zumo-robots-and-accessories
+
+* Pololu Zumo Robot for Arduino
+ - キャタピラ
+ - センサ：ラインセンサ
+ - アクチュエータ：モーターx2
+ - MPU: ATmega328 (Arduino Uno)
+ - https://www.pololu.com/category/129/zumo-robots-and-accessories
+
+* Pololu m3pi
+ - 2輪+ボール
+ - センサ：ラインセンサ
+ - アクチュエータ：モーターx2
+ - MPU: ATmega328 + mbed LPC1768
+ - https://www.pololu.com/category/76/3pi-robot-and-accessories
+
+* M5Bala
+ - 2輪倒立振子
+ - センサ：加速度，ジャイロ，方位
+ - アクチュエータ：モーターx2
+ - Wifi, Bluetooth
+ - MPU: ESP32 (M5Fire)
+ - https://docs.m5stack.com/#/en/app/bala
+
+
+Balboa32U4, Zumo32U4については簡単な例題が以下にあります．
+
+https://github.com/psg-titech/emfrp_samples
+
+これらの例よりもう少しいろいろできるものを作ってみてください．
+（例：倒立振子 + Wifi, Bluetooth等でリモートコントロールを行う等）
+
+-- takuo
+
+
+
